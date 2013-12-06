@@ -24,30 +24,71 @@ In your project's Gruntfile, add a section named `maven_deploy` to the data obje
 
 ```js
 grunt.initConfig({
-  maven_deploy: {
+  options: {
+    groupId: 'com.github.mrkelly',
+    artifactId: 'grunt-maven-deploy',        
+  },
+  src: {
     options: {
-      // Task-specific options go here.
+      url: '<%= repositoryURL %>',
+      repositoryId: 'my-nexus',
+      classifier: 'sources'
     },
-    your_target: {
-      // Target-specific file lists and/or options go here.
-    },
+    files: [{src: ['**'], dest: ''}]
   },
 });
 ```
 
 ### Options
 
-#### options.separator
+#### options.groupId
 Type: `String`
-Default value: `',  '`
+Required
 
-A string value that is used to do something with whatever.
+The maven group id to use when deploying and artifact
 
-#### options.punctuation
+#### options.artifactId
 Type: `String`
-Default value: `'.'`
+Default: name found in package.json
 
-A string value that is used to do something else with whatever else.
+The maven artifact id to use when deploying and artifact
+
+#### options.version
+Type: `String`
+Default: version found in package.json
+
+The version to use when deploying to the maven repository
+
+#### options.packaging
+Type: `String`
+Default: zip
+
+The packaging to use when deploying to the maven repository. Will also
+determine the archiving type. As internally the grunt-contrib-compress
+plugin is used to package the artifact, only archiving types supported
+by this module is supported.
+
+#### options.url
+Type: `String`
+Required
+
+The url for the maven repository to deploy to.
+
+#### options.repositoryId
+Type: `String`
+Optional
+
+The repository id of the repository to deploy to. Used for looking up authentication in settings.xml.
+
+### options.injectDestFolder
+Type: `String`
+Optional
+
+Enables you to turn off the injection of destination folder inside your artifact allowing you to choose the structure you want by configuring the compress task.
+
+### Files
+
+Files may be specified using any of the supported [Grunt file mapping formats](http://gruntjs.com/configuring-tasks#files).
 
 ### Usage Examples
 
@@ -57,26 +98,39 @@ In this example, the default options are used to do something with whatever. So 
 ```js
 grunt.initConfig({
   maven_deploy: {
-    options: {},
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-});
-```
-
-#### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
-
-```js
-grunt.initConfig({
-  maven_deploy: {
     options: {
-      separator: ': ',
-      punctuation: ' !!!',
+      groupId: 'com.github.mrkelly',
+      artifactId: 'grunt-maven-deploy',        
     },
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
+    'release-src': {
+      options: {
+        url: '<%= releaseRepository %>',
+        repositoryId: 'my-nexus',
+        classifier: 'sources'
+      },
+      files: [{src: ['**'], dest: ''}]
+    },
+    'release-dist': {
+      options: {
+        url: '<%= releaseRepository %>',
+        repositoryId: 'my-nexus',
+      },
+      files: [{expand: true, cwd: 'tasks/', src: ['**'], dest: ''}]
+    },
+    'deploy-src': {
+      options: {
+        url: '<%= snapshotRepository %>',
+        repositoryId: 'my-nexus',
+        classifier: 'sources'
+      },
+      files: [{src: ['**'], dest: ''}]
+    },
+    'deploy-dist': {
+      options: {
+        url: '<%= snapshotRepository %>',
+        repositoryId: 'my-nexus',
+      },
+      files: [{expand: true, cwd: 'tasks/', src: ['**'], dest: ''}]
     },
   },
 });
