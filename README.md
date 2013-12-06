@@ -19,6 +19,8 @@ grunt.loadNpmTasks('grunt-maven-deploy');
 
 ## The "maven_deploy" task
 
+The project is heavily based off of [grunt-maven-tasks](https://github.com/smh/grunt-maven-tasks) by Stein Martin Hustad.  This plugin is a slimmed down version whose sole purpose is to publish artifacts to an artifact repository with classifiers.  All versioning and releasing should be managed by the user. 
+
 ### Overview
 In your project's Gruntfile, add a section named `maven_deploy` to the data object passed into `grunt.initConfig()`.
 
@@ -59,15 +61,6 @@ Default: version found in package.json
 
 The version to use when deploying to the maven repository
 
-#### options.packaging
-Type: `String`
-Default: zip
-
-The packaging to use when deploying to the maven repository. Will also
-determine the archiving type. As internally the grunt-contrib-compress
-plugin is used to package the artifact, only archiving types supported
-by this module is supported.
-
 #### options.url
 Type: `String`
 Required
@@ -92,8 +85,7 @@ Files may be specified using any of the supported [Grunt file mapping formats](h
 
 ### Usage Examples
 
-#### Default Options
-In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
+Deploying snapshots for source and dist as well as releases for source and dist.
 
 ```js
 grunt.initConfig({
@@ -135,9 +127,3 @@ grunt.initConfig({
   },
 });
 ```
-
-## Contributing
-In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
-
-## Release History
-_(Nothing yet)_
