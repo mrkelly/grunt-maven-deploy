@@ -7,6 +7,8 @@
 
 'use strict';
 
+var fs = require('fs');
+
 function injectDestFolder(targetPath, files) {
   var path = require('path');
   files.forEach(function(file) {
@@ -27,10 +29,30 @@ module.exports = function(grunt) {
 
     options.goal = options.goal || this.target;
 
-    requireOptionProps(options, ['url']);
-    deploy(this);
+    if (options.goal === 'deploy') {
+      requireOptionProps(options, ['url']);
+      deploy(this);
+    } else if (options.goal === 'install') {
+      install(this);
+    } 
 
   });
+
+  function install(task) {
+    var pkg = grunt.file.readJSON('package.json');
+    var options = task.options({
+      artifactId: pkg.name,
+      version: pkg.version,
+      packaging: 'zip'
+    });
+
+    guaranteeFileName(options);
+    configureDestination(options, task);
+    configureMaven(options, task);
+
+    grunt.task.run('maven_deploy:package',
+      'maven_deploy:install-file');
+  }
 
   function deploy(task) {
     var pkg = grunt.file.readJSON('package.json');
@@ -53,8 +75,51 @@ module.exports = function(grunt) {
     compress.tar(grunt.config('maven.package.files'), this.async());
   });
 
+  grunt.registerTask('maven_deploy:install-file', function() {
+    var options = grunt.config('maven.install-file.options');
+
+    options.packaging = (options.type === 'jar') ? 'jar' : options.packaging;
+    if (options.packaging === 'jar'){
+        options.file = renameForJarTypeArtifacts(options.file);
+    }
+
+    var args = [ 'install:install-file' ];
+    args.push('-Dfile='         + options.file);
+    args.push('-DgroupId='      + options.groupId);
+    args.push('-DartifactId='   + options.artifactId);
+    args.push('-Dpackaging='    + options.packaging);
+    args.push('-Dversion='      + options.version);
+    if (options.classifier) {
+            args.push('-Dclassifier=' + options.classifier);
+    }
+
+    var done = this.async();
+    var msg = 'Installing to maven...';
+    grunt.verbose.write(msg);
+    grunt.log.debug('Running command "mvn ' + args.join(' ') + '"');
+    var mavenCommand = grunt.util.spawn({ cmd: 'mvn', args: args }, function(err, result, code) {
+      if (err) {
+        grunt.verbose.or.write(msg);
+        grunt.log.error().error('Failed to install to maven');
+      } else {
+        grunt.verbose.ok();
+        grunt.log.writeln('Installed ' + options.file.cyan);
+      }
+      done(err);
+    });
+
+    mavenCommand.stdout.on('data', function(buf) {
+      grunt.verbose.write(String(buf));
+    });
+  });
+
   grunt.registerTask('maven_deploy:deploy-file', function() {
     var options = grunt.config('maven.deploy-file.options');
+
+    options.packaging = (options.type === 'jar') ? 'jar' : options.packaging;
+    if (options.packaging === 'jar'){
+        options.file = renameForJarTypeArtifacts(options.file);
+    }
 
     var args = [ 'deploy:deploy-file' ];
     args.push('-Dfile='         + options.file);
@@ -126,6 +191,16 @@ module.exports = function(grunt) {
       grunt.verbose.or.write(msg);
       grunt.log.error().error('Unable to process task.');
       throw grunt.util.error('Required options ' + failProps.join(', ') + ' missing.');
+    }
+  }
+
+  function renameForJarTypeArtifacts(filename) {
+    var warFileName = filename.replace('zip', 'jar');
+    try {
+      fs.renameSync(filename, warFileName);
+      return warFileName;
+    } catch (e) {
+      throw e;
     }
   }
 
