@@ -46,6 +46,10 @@ module.exports = function(grunt) {
       packaging: 'zip'
     });
 
+    if (options.snapshot) {
+      options.version = options.version + "-SNAPSHOT";
+    }
+
     guaranteeFileName(options);
     configureDestination(options, task);
     configureMaven(options, task);
@@ -61,6 +65,10 @@ module.exports = function(grunt) {
       version: pkg.version,
       packaging: 'zip'
     });
+
+    if (options.snapshot) {
+      options.version = options.version + "-SNAPSHOT";
+    }
 
     guaranteeFileName(options);
     configureDestination(options, task);
