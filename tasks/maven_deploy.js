@@ -28,6 +28,7 @@ module.exports = function(grunt) {
     requireOptionProps(options, ['groupId']);
 
     options.goal = options.goal || this.target;
+    options.packaging = options.type || options.packaging;
 
     if (options.goal === 'deploy') {
       requireOptionProps(options, ['url']);
@@ -86,8 +87,6 @@ module.exports = function(grunt) {
   grunt.registerTask('maven_deploy:install-file', function() {
     var options = grunt.config('maven.install-file.options');
 
-    options.packaging = options.type || options.packaging;
-
     var args = [ 'install:install-file' ];
     args.push('-Dfile='         + options.file);
     args.push('-DgroupId='      + options.groupId);
@@ -120,8 +119,6 @@ module.exports = function(grunt) {
 
   grunt.registerTask('maven_deploy:deploy-file', function() {
     var options = grunt.config('maven.deploy-file.options');
-
-    options.packaging = options.type || options.packaging;
 
     var args = [ 'deploy:deploy-file' ];
     args.push('-Dfile='         + options.file);
@@ -160,7 +157,7 @@ module.exports = function(grunt) {
 
   function guaranteeFileName(options) {
     if (!options.file) {
-      options.file = options.artifactId + '-' + options.version + '.' + (options.type || options.packaging);
+      options.file = options.artifactId + '-' + options.version + '.' + options.packaging;
     }
   }
 
