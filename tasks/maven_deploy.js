@@ -28,7 +28,6 @@ module.exports = function(grunt) {
     requireOptionProps(options, ['groupId']);
 
     options.goal = options.goal || this.target;
-    options.packaging = options.type || options.packaging;
 
     if (options.goal === 'deploy') {
       requireOptionProps(options, ['url']);
@@ -46,6 +45,7 @@ module.exports = function(grunt) {
       version: pkg.version,
       packaging: 'zip'
     });
+    options.packaging = options.type || options.packaging;
 
     if (options.snapshot) {
       options.version = options.version + "-SNAPSHOT";
@@ -66,6 +66,7 @@ module.exports = function(grunt) {
       version: pkg.version,
       packaging: 'zip'
     });
+    options.packaging = options.type || options.packaging;
 
     if (options.snapshot) {
       options.version = options.version + "-SNAPSHOT";
