@@ -55,21 +55,60 @@ Default: name found in package.json
 
 The maven artifact id to use when deploying and artifact
 
+#### options.packaging
+Type: `String`
+Default: `zip`
+
+The artifact packaging. Supported values are `jar`, `war`, `gzip`, `deflate`, `deflateRaw`, `tar`, `tgz` (tar gzip), and `zip`.
+
+If `options.type` is defined, that parameter is used instead.
+
+#### options.type *(deprecated)*
+Type: `String`
+Optional
+
+This parameter overrides the `options.packaging` parameter.
+
+#### options.classifier
+Type: `String`
+Optional
+
+The artifact classifier.
+
 #### options.version
 Type: `String`
 Default: version found in package.json
 
 The version to use when deploying to the maven repository
 
+#### options.snapshot
+Type: `Boolean`
+Default: `false`
+
+If true, `-SNAPSHOT` is appended to the version.
+
+#### options.file
+Type: `String`
+Default: *artifactId-version.packaging*
+Example: fizzwidget-1.0.0.war
+
+The file
+
+#### options.goal
+Type: `String`
+Default: `deploy`
+
+The action used to deploy the artifact. Supported values are `deploy` or `install`.
+
 #### options.url
 Type: `String`
-Required
+Required when `options.goal` is `deploy` (the default). Ignored otherwise.
 
 The url for the maven repository to deploy to.
 
 #### options.repositoryId
 Type: `String`
-Optional
+Optional. Ignored if `options.goal` is not `deploy`.
 
 The repository id of the repository to deploy to. Used for looking up authentication in settings.xml.
 
