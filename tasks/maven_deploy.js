@@ -160,7 +160,7 @@ module.exports = function(grunt) {
 
   function guaranteeFileName(options) {
     if (!options.file) {
-      options.file = options.artifactId + '-' + options.version + '.' + options.packaging;
+      options.file = options.artifactId + '-' + options.version + '.' + (options.type || options.packaging);
     }
   }
 
