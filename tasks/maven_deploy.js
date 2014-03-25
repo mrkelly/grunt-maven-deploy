@@ -86,10 +86,7 @@ module.exports = function(grunt) {
   grunt.registerTask('maven_deploy:install-file', function() {
     var options = grunt.config('maven.install-file.options');
 
-    if (options.type === 'jar' || options.type === 'war') {
-      options.packaging = options.type;
-      options.file = renameForArtifactType(options.file, options.type);
-    }
+    options.packaging = options.type || options.packaging;
 
     var args = [ 'install:install-file' ];
     args.push('-Dfile='         + options.file);
@@ -124,10 +121,7 @@ module.exports = function(grunt) {
   grunt.registerTask('maven_deploy:deploy-file', function() {
     var options = grunt.config('maven.deploy-file.options');
 
-    if (options.type === 'jar' || options.type === 'war') {
-      options.packaging = options.type;
-      options.file = renameForArtifactType(options.file, options.type);
-    }
+    options.packaging = options.type || options.packaging;
 
     var args = [ 'deploy:deploy-file' ];
     args.push('-Dfile='         + options.file);
@@ -176,8 +170,16 @@ module.exports = function(grunt) {
     }
   }
 
+  var PACKAGING_MODES = {
+    'jar': 'zip',
+    'war': 'zip'
+  };
+
   function configureMaven(options, task) {
-    grunt.config.set('maven.package.options', { archive: options.file, mode: options.packaging });
+    grunt.config.set('maven.package.options', {
+      archive: options.file,
+      mode: PACKAGING_MODES[options.packaging] || options.packaging
+    });
     grunt.config.set('maven.package.files', task.files);
     grunt.config.set('maven.deploy-file.options', options);
     grunt.config.set('maven.install-file.options', options);
@@ -199,16 +201,6 @@ module.exports = function(grunt) {
       grunt.verbose.or.write(msg);
       grunt.log.error().error('Unable to process task.');
       throw grunt.util.error('Required options ' + failProps.join(', ') + ' missing.');
-    }
-  }
-
-  function renameForArtifactType(filename, type) {
-    var typeFilename = filename.replace('zip', type);
-    try {
-      fs.renameSync(filename, typeFilename);
-      return typeFilename;
-    } catch (e) {
-      throw e;
     }
   }
 
