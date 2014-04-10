@@ -1,12 +1,18 @@
 {
   "name": "grunt-maven-deploy",
   "description": "Grunt Maven Deploy",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "homepage": "https://github.com/mrkelly/grunt-maven-deploy",
-  "author": {
-    "name": "Michael Kelly",
-    "email": "michael@mikeryankelly.com"
-  },
+  "contributors": [
+    {
+      "name": "Matthew Hall",
+      "email": "qualidafial@gmail.com"
+    },
+    {
+      "name": "Michael Kelly",
+      "email": "michael@mikeryankelly.com"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "https://mrkelly@github.com/mrkelly/grunt-maven-deploy.git"
