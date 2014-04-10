@@ -45,6 +45,7 @@ module.exports = function(grunt) {
       version: pkg.version,
       packaging: 'zip'
     });
+    options.packaging = options.type || options.packaging;
 
     if (options.snapshot) {
       options.version = options.version + "-SNAPSHOT";
@@ -65,6 +66,7 @@ module.exports = function(grunt) {
       version: pkg.version,
       packaging: 'zip'
     });
+    options.packaging = options.type || options.packaging;
 
     if (options.snapshot) {
       options.version = options.version + "-SNAPSHOT";
@@ -85,11 +87,6 @@ module.exports = function(grunt) {
 
   grunt.registerTask('maven_deploy:install-file', function() {
     var options = grunt.config('maven.install-file.options');
-
-    options.packaging = (options.type === 'jar') ? 'jar' : options.packaging;
-    if (options.packaging === 'jar'){
-        options.file = renameForJarTypeArtifacts(options.file);
-    }
 
     var args = [ 'install:install-file' ];
     args.push('-Dfile='         + options.file);
@@ -123,11 +120,6 @@ module.exports = function(grunt) {
 
   grunt.registerTask('maven_deploy:deploy-file', function() {
     var options = grunt.config('maven.deploy-file.options');
-
-    options.packaging = (options.type === 'jar') ? 'jar' : options.packaging;
-    if (options.packaging === 'jar'){
-        options.file = renameForJarTypeArtifacts(options.file);
-    }
 
     var args = [ 'deploy:deploy-file' ];
     args.push('-Dfile='         + options.file);
@@ -176,8 +168,16 @@ module.exports = function(grunt) {
     }
   }
 
+  var PACKAGING_MODES = {
+    'jar': 'zip',
+    'war': 'zip'
+  };
+
   function configureMaven(options, task) {
-    grunt.config.set('maven.package.options', { archive: options.file, mode: options.packaging });
+    grunt.config.set('maven.package.options', {
+      archive: options.file,
+      mode: PACKAGING_MODES[options.packaging] || options.packaging
+    });
     grunt.config.set('maven.package.files', task.files);
     grunt.config.set('maven.deploy-file.options', options);
     grunt.config.set('maven.install-file.options', options);
@@ -199,16 +199,6 @@ module.exports = function(grunt) {
       grunt.verbose.or.write(msg);
       grunt.log.error().error('Unable to process task.');
       throw grunt.util.error('Required options ' + failProps.join(', ') + ' missing.');
-    }
-  }
-
-  function renameForJarTypeArtifacts(filename) {
-    var warFileName = filename.replace('zip', 'jar');
-    try {
-      fs.renameSync(filename, warFileName);
-      return warFileName;
-    } catch (e) {
-      throw e;
     }
   }
 
