@@ -88,11 +88,22 @@ Default: `false`
 If true, `-SNAPSHOT` is appended to the version.
 
 #### options.file
-Type: `String`
+Type: `String` | `Function`
 Default: *artifactId-version.packaging*
 Example: fizzwidget-1.0.0.war
 
-The file
+The output file.  You can use either a string or a callback function which takes an `options` parameter.  The `options` parameter includes all the options for this target's configuration.  
+
+Note that `options.version` will have `-SNAPSHOT` appended at the time the file function is invoked when options.snapshot is `true`.
+
+Example)
+
+```javascript
+function(options) {
+  // customize output directory name and filename
+  return 'target/' + options.artifactId + '-' + options.version + '.' + options.packaging;
+}
+```
 
 #### options.goal
 Type: `String`

@@ -89,7 +89,7 @@ module.exports = function(grunt) {
     var options = grunt.config('maven.install-file.options');
 
     var args = [ 'install:install-file' ];
-    args.push('-Dfile='         + options.file);
+    args.push('-Dfile='         + options.outputFile);
     args.push('-DgroupId='      + options.groupId);
     args.push('-DartifactId='   + options.artifactId);
     args.push('-Dpackaging='    + options.packaging);
@@ -108,7 +108,7 @@ module.exports = function(grunt) {
         grunt.log.error().error('Failed to install to maven');
       } else {
         grunt.verbose.ok();
-        grunt.log.writeln('Installed ' + options.file.cyan);
+        grunt.log.writeln('Installed ' + options.outputFile.cyan);
       }
       done(err);
     });
@@ -122,7 +122,7 @@ module.exports = function(grunt) {
     var options = grunt.config('maven.deploy-file.options');
 
     var args = [ 'deploy:deploy-file' ];
-    args.push('-Dfile='         + options.file);
+    args.push('-Dfile='         + options.outputFile);
     args.push('-DgroupId='      + options.groupId);
     args.push('-DartifactId='   + options.artifactId);
     args.push('-Dpackaging='    + options.packaging);
@@ -146,7 +146,7 @@ module.exports = function(grunt) {
         grunt.log.error().error('Failed to deploy to maven');
       } else {
         grunt.verbose.ok();
-        grunt.log.writeln('Deployed ' + options.file.cyan + ' to ' + options.url.cyan);
+        grunt.log.writeln('Deployed ' + options.outputFile.cyan + ' to ' + options.url.cyan);
       }
       done(err);
     });
@@ -157,9 +157,15 @@ module.exports = function(grunt) {
   });
 
   function guaranteeFileName(options) {
-    if (!options.file) {
-      options.file = options.artifactId + '-' + options.version + '.' + options.packaging;
+    if (typeof options.file === 'string') {
+      options.outputFile = options.file;
+    } else if (typeof options.file === 'function') {
+      options.outputFile = options.file(options);
+    } else {
+      options.outputFile = options.artifactId + '-' + options.version + '.' + options.packaging;
     }
+
+    grunt.log.debug('Output file: "' + options.outputFile + '"');
   }
 
   function configureDestination(options, task) {
@@ -175,7 +181,7 @@ module.exports = function(grunt) {
 
   function configureMaven(options, task) {
     grunt.config.set('maven.package.options', {
-      archive: options.file,
+      archive: options.outputFile,
       mode: PACKAGING_MODES[options.packaging] || options.packaging
     });
     grunt.config.set('maven.package.files', task.files);
