@@ -28,23 +28,23 @@
   ],
   "main": "Gruntfile.js",
   "engines": {
-    "node": ">= 0.8.0"
+    "node": ">= 0.10.0"
   },
   "scripts": {
     "test": "grunt test"
   },
   "devDependencies": {
-    "grunt-contrib-jshint": "~0.6.0",
-    "grunt": "~0.4.2"
+    "grunt-contrib-jshint": "^1.1.0",
+    "grunt": "^1.0.1"
   },
   "peerDependencies": {
-    "grunt": "~0.4.2"
+    "grunt": "^1.0.1"
   },
   "keywords": [
     "gruntplugin"
   ],
   "dependencies": {
-    "grunt": "~0.4.2",
-    "grunt-contrib-compress": "~0.5.3"
+    "grunt": "^1.0.1",
+    "grunt-contrib-compress": "^1.4.1"
   }
 }
